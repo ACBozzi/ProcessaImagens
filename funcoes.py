@@ -24,33 +24,7 @@ def tamanho_janela(percentual_amostragem,dimensions):
 	janela1 = dimensions[0] / int(nova_altura)
 	janela2 = dimensions[1] / int(nova_largura)
 	print(janela1,janela2)
-	return int(janela1), int(janela2)
-
-# CASO O TAMANHO DA IMAGEM SEJA PAR, NÃO PRECISA INTERPOLAR E ENTRA AQUI PARA FAZER MODA MEDIANA E MEDIA 
-def amostragem(img,tipo, dimensions):
-	if tipo == 1:	#media
-		for j in range(0, dimensions[1]-1,janela2):	#coluna
-			for i in range(0,dimensions[0]-1, janela1):	#linha
-				for x in range(i, (i+janela1)-1):
-					for y in range(j, (j+janela2)-1):
-						Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
-				Inova[Lnova,Cnova] = Inova[Lnova,Cnova] / janela1*janela2	#aqui faz a media
-	
-	elif tipo ==2:
-		for j in range(0, dimensions[1]-1,janela2):	#coluna
-			for i in range(0,dimensions[0]-1, janela1):	#linha
-				for x in range(i, (i+janela1)-1):
-					for y in range(j, (j+janela2)-1):
-						lista = []
-						lista.push(img[x,y])
-						lista_ordenada = sorted(lista) 
-						#fazer o calculo aqui
-		print("fazer mediana")
-	
-	else:
-		print("fazer a moda")
-
-
+	return int(janela1), int(janela2), int(nova_largura), int(nova_altura)
 
 
 def verificaErroParametros():
@@ -72,6 +46,39 @@ def verificaErroParametros():
         exit()
 
 
+# CASO O TAMANHO DA IMAGEM SEJA PAR, NÃO PRECISA INTERPOLAR E ENTRA AQUI PARA FAZER MODA MEDIANA E MEDIA 
+def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
+	Inova = np.zeros((alturaNova,larguraNova))
+	Lnova = 0
+	Cnova = 0
+	if tipo == 1:	#media
+		for i in range(0, dimensions[0]-1,janela1):	#coluna
+			Lnova+=1
+			Cnova = 0
+			for j in range(0,dimensions[1]-1, janela2):	#linha
+				Cnova +=1
+				for x in range(i, (i+janela1)-1):
+					for y in range(j, (j+janela2)-1):
+						Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
+				Inova[Lnova,Cnova] = Inova[Lnova,Cnova] / janela1*janela2	#aqui faz a media
+
+	
+	elif tipo ==2:
+		for j in range(0, dimensions[1]-1,janela2):	#coluna
+			for i in range(0,dimensions[0]-1, janela1):	#linha
+				for x in range(i, (i+janela1)-1):
+					for y in range(j, (j+janela2)-1):
+						lista = []
+						lista.append(img[x,y])
+						lista_ordenada = sorted(lista) 
+						#fazer o calculo aqui
+		print("fazer mediana")
+	
+	else:
+		print("fazer a moda")
+
+
+
 if __name__ == '__main__':
 
 	verificaErroParametros()
@@ -83,6 +90,7 @@ if __name__ == '__main__':
 	#abre a imagem
 	img = cv2 . imread (sys.argv[1], 0) 	
 	dimensions = img.shape
+	print("DIMENSOES:", dimensions)
 
 	#pega a tecnica de amostragem
 	tecnica_amostragem = sys.argv[3] 
@@ -94,9 +102,8 @@ if __name__ == '__main__':
 
 
 	janelas = tamanho_janela(percentual_amostragem,dimensions)	#retorna uma lista
-	if janelas[0] % dimensions[0] == 0 and janelas[1] % dimensions [1] == 0:
-		#caso de não interpolação
-		tecnica_amostragem(img,tecnica_amostragem)
+	if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
+		amostragem(img,tecnica_amostragem, dimensions,janelas[0],janelas[1],janelas[2],janelas[3])
 	else:
 		print("interpolacao")
 
