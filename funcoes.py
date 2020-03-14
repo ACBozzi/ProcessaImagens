@@ -50,39 +50,40 @@ def verificaErroParametros():
 #-------------------------------------------------------------------------------------------------------------------------
 # CASO O TAMANHO DA IMAGEM SEJA PAR, NÃO PRECISA INTERPOLAR E ENTRA AQUI PARA FAZER MODA, MEDIANA OU MEDIA 
 def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
-	Inova = np.zeros((alturaNova,larguraNova))
+	Inova = np.zeros((alturaNova,larguraNova), dtype = int)
 	Lnova = 0
 	Cnova = 0
 
 	# se o parametro passado for um então a técnica é a media
 	if tipo == 1:
 		print("ENTROU NA MEDIA")
-		for linha in range(0, dimensions[0]-1,janela1):	#linha
+		for linha in range(0, dimensions[0],janela1):	#linha
 			Cnova = 0
-			for coluna in range(0,dimensions[1]-1, janela2):	#coluna
-				for x in range(linha, (linha+janela1)-1):
-					for y in range(coluna, (coluna+janela2)-1):
+			for coluna in range(0,dimensions[1], janela2):	#coluna
+				for x in range(linha, (linha+janela1)):
+					for y in range(coluna, (coluna+janela2)):
 						Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
-						#print("SEM DIVIDIR:", Inova[Lnova,Cnova])
 				Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
-				#print("Dividindo", Inova[Lnova,Cnova])
 				Cnova+=1
-				#print("ColunaNova:", Cnova)
 			Lnova+=1
-			#print("LinhaNova:", Lnova)
+		Inova = Inova.astype(np.uint8) 
 		cv2.imshow('image',Inova)
 		cv2.waitKey(0)
+		tamanho = Inova.shape
+		print("REDUZIDA:", tamanho)
 
 	# se o parâmetro for dois então é mediana
 	elif tipo ==2:
-		for coluna in range(0, dimensions[1]-1,janela2):	#coluna
-			for linha in range(0,dimensions[0]-1, janela1):	#linha
-				for x in range(linha, (linha+janela1)-1):
-					for y in range(coluna, (coluna+janela2)-1):
+		for linha in range(0, dimensions[0],janela1):	#coluna
+			Cnova = 0
+			for coluna in range(0,dimensions[1], janela2):	#linha
+				for x in range(linha, (linha+janela1)):
+					for y in range(coluna, (coluna+janela2)):
 						lista = []
 						lista.append(img[x,y])
 						lista_ordenada = sorted(lista) 
-						#fazer o calculo aqui
+					if len(lista_ordenada) % 2 == 0:
+						print("a janela é par")
 		print("fazer mediana")
 	
 	#senão é a moda
