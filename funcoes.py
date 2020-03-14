@@ -14,21 +14,6 @@ from numpy import *
 import random
 import statistics
 
-
-def open(file):
-	print(dimensions)
-	return dimensions
-
-#-------------------------------------------------------------------------------------------------------------------
-#FUNÇÃO PARA DEFINIR O TAMANHO DA JANELA
-def tamanho_janela(percentual_amostragem,dimensions):	
-	nova_altura = dimensions[0] - (dimensions[0]*percentual_amostragem)
-	nova_largura = dimensions[1] - (dimensions[1]*percentual_amostragem)
-	janela1 = dimensions[0] / int(nova_altura)
-	janela2 = dimensions[1] / int(nova_largura)
-	print("TAMANHO DA JANELA:",janela1,janela2)
-	return float(janela1), float(janela2), int(nova_altura), int(nova_largura)
-
 #----------------------------------------------------------------------------------------------------------------------
 #### FUNÇÃO PARA VERIFICAÇÃO DE ERROS PASSADOS EM PARÂMETRO##
 def verificaErroParametros():
@@ -48,6 +33,18 @@ def verificaErroParametros():
     elif(argumentos==4):
         print("Entre com os niveis de cinza desejados")
         exit()
+
+
+#-------------------------------------------------------------------------------------------------------------------
+#FUNÇÃO PARA DEFINIR O TAMANHO DA JANELA
+def tamanho_janela(percentual_amostragem,dimensions):	
+	nova_altura = dimensions[0] - (dimensions[0]*percentual_amostragem)
+	nova_largura = dimensions[1] - (dimensions[1]*percentual_amostragem)
+	janela1 = dimensions[0] / int(nova_altura)
+	janela2 = dimensions[1] / int(nova_largura)
+	print("TAMANHO DA JANELA:",janela1,janela2)
+	return float(janela1), float(janela2), int(nova_altura), int(nova_largura)
+
 
 #-------------------------------------------------------------------------------------------------------------------------
 # CASO O TAMANHO DA IMAGEM SEJA PAR, NÃO PRECISA INTERPOLAR E ENTRA AQUI PARA FAZER MODA, MEDIANA OU MEDIA 
@@ -123,6 +120,30 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 		cv2.waitKey(0)
 
 #----------------------------------------------------------------------------------------------------------
+
+#CASO O VALOR DA JANELA NÃO SEJA EXATO FAZER INTERPOLAÇÃO
+#def interpolacao(img,janela1,janela2,alturaNova,larguraNova):
+#	Inova = np.zeros((alturaNova,larguraNova), dtype = int)
+#	
+#	k = 0
+#	l = 0
+#    
+#	for i in range(0, alturaNova, janela1):
+#		for j in range(0, larguraNova, janela2):
+#			l+=1
+#		l = 0
+#	Inova = Inova.astype(np.uint8) 
+#	tamanho = Inova.shape
+#	print("NOVO TAMANHO:", tamanho)					
+#	cv2.imshow('image',Inova)
+#	cv2.waitKey(0)
+#
+#----------------------------------------------------------------------------------------------------------
+
+#def interpolacao_add_zeros(img,nova_altura,nova_largura):
+
+	
+
 #MAIN
 if __name__ == '__main__':
 
@@ -156,7 +177,6 @@ if __name__ == '__main__':
 	if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
 		amostragem(img,tecnica_amostragem, dimensions,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3])
 	else:
-		print("interpolacao")
-
+		interpolacao(img,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3] )
 
 	print("jnaela1,janela2, altura e largura: ",janelas)
