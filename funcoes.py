@@ -11,6 +11,8 @@ from matplotlib import pylab
 from pylab import *
 import os
 from numpy import *
+import random
+import statistics
 
 
 def open(file):
@@ -56,7 +58,6 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 
 	# se o parametro passado for um então a técnica é a media
 	if tipo == 1:
-		print("ENTROU NA MEDIA")
 		for linha in range(0, dimensions[0],janela1):	#linha
 			Cnova = 0
 			for coluna in range(0,dimensions[1], janela2):	#coluna
@@ -70,25 +71,54 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 		cv2.imshow('image',Inova)
 		cv2.waitKey(0)
 		tamanho = Inova.shape
-		print("REDUZIDA:", tamanho)
 
 	# se o parâmetro for dois então é mediana
 	elif tipo ==2:
-		for linha in range(0, dimensions[0],janela1):	#coluna
+		lista = []
+		for linha in range(0, dimensions[0],janela1):	#linha
 			Cnova = 0
-			for coluna in range(0,dimensions[1], janela2):	#linha
+			for coluna in range(0,dimensions[1], janela2):	#coluna
 				for x in range(linha, (linha+janela1)):
 					for y in range(coluna, (coluna+janela2)):
-						lista = []
 						lista.append(img[x,y])
-						lista_ordenada = sorted(lista) 
-					if len(lista_ordenada) % 2 == 0:
-						print("a janela é par")
-		print("fazer mediana")
+				lista_ordenada = sorted(lista) 
+				if len(lista_ordenada) % 2 == 0:
+					mediana = median(lista_ordenada)
+					Inova[Lnova,Cnova] = mediana
+					lista.clear()
+				else:
+					print("Janela não pe redonda")
+				Cnova+=1
+			Lnova+=1
+		Inova = Inova.astype(np.uint8) 
+		tamanho = Inova.shape
+		print("NOVO TAMANHO:", tamanho)					
+		cv2.imshow('image',Inova)
+		cv2.waitKey(0)
 	
 	#senão é a moda
 	else:
-		print("fazer a moda")
+		lista = []
+		for linha in range(0, dimensions[0],janela1):	#linha
+			Cnova = 0
+			for coluna in range(0,dimensions[1], janela2):	#coluna
+				for x in range(linha, (linha+janela1)):
+					for y in range(coluna, (coluna+janela2)):
+						lista.append(img[x,y]) 
+				try:
+					moda = statistics.mode(lista)
+					Inova[Lnova,Cnova] = moda
+					lista.clear()
+				except :
+					print("Não foi possível usar a Moda para amostragem dessa imagem")
+					exit()
+				Cnova+=1
+			Lnova+=1
+		Inova = Inova.astype(np.uint8) 
+		tamanho = Inova.shape
+		print("NOVO TAMANHO:", tamanho)					
+		cv2.imshow('image',Inova)
+		cv2.waitKey(0)
 
 #----------------------------------------------------------------------------------------------------------
 #MAIN
@@ -103,7 +133,7 @@ if __name__ == '__main__':
 
 	#abre a imagem
 	img = cv2 . imread (sys.argv[1], 0) 	
-	#print("Original", img)
+	print("Original", img)
 	dimensions = img.shape
 	print("DIMENÇÃO ORIGINAL:", dimensions)
 
