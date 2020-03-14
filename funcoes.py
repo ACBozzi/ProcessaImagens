@@ -110,8 +110,10 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 					Inova[Lnova,Cnova] = moda
 					lista.clear()
 				except :
-					print("Não foi possível usar a Moda para amostragem dessa imagem")
-					exit()
+					print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
+					media = statistics.mean(lista)
+					Inova[Lnova,Cnova] = media
+					lista.clear()
 				Cnova+=1
 			Lnova+=1
 		Inova = Inova.astype(np.uint8) 
@@ -133,7 +135,7 @@ if __name__ == '__main__':
 
 	#abre a imagem
 	img = cv2 . imread (sys.argv[1], 0) 	
-	print("Original", img)
+	#print("Original", img)
 	dimensions = img.shape
 	print("DIMENÇÃO ORIGINAL:", dimensions)
 
