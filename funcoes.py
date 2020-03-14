@@ -17,16 +17,18 @@ def open(file):
 	print(dimensions)
 	return dimensions
 
-
+#-------------------------------------------------------------------------------------------------------------------
+#FUNÇÃO PARA DEFINIR O TAMANHO DA JANELA
 def tamanho_janela(percentual_amostragem,dimensions):	
 	nova_altura = dimensions[0] - (dimensions[0]*percentual_amostragem)
 	nova_largura = dimensions[1] - (dimensions[1]*percentual_amostragem)
 	janela1 = dimensions[0] / int(nova_altura)
 	janela2 = dimensions[1] / int(nova_largura)
-	print(janela1,janela2)
-	return int(janela1), int(janela2), int(nova_largura), int(nova_altura)
+	print("TAMANHO DA JANELA:",janela1,janela2)
+	return int(janela1), int(janela2), int(nova_altura), int(nova_largura)
 
-
+#----------------------------------------------------------------------------------------------------------------------
+#### FUNÇÃO PARA VERIFICAÇÃO DE ERROS PASSADOS EM PARÂMETRO##
 def verificaErroParametros():
     argumentos = len(sys.argv)
     if(argumentos == 1):
@@ -45,40 +47,50 @@ def verificaErroParametros():
         print("Entre com os niveis de cinza desejados")
         exit()
 
-
-# CASO O TAMANHO DA IMAGEM SEJA PAR, NÃO PRECISA INTERPOLAR E ENTRA AQUI PARA FAZER MODA MEDIANA E MEDIA 
+#-------------------------------------------------------------------------------------------------------------------------
+# CASO O TAMANHO DA IMAGEM SEJA PAR, NÃO PRECISA INTERPOLAR E ENTRA AQUI PARA FAZER MODA, MEDIANA OU MEDIA 
 def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 	Inova = np.zeros((alturaNova,larguraNova))
 	Lnova = 0
 	Cnova = 0
-	if tipo == 1:	#media
-		for i in range(0, dimensions[0]-1,janela1):	#coluna
-			Lnova+=1
-			Cnova = 0
-			for j in range(0,dimensions[1]-1, janela2):	#linha
-				Cnova +=1
-				for x in range(i, (i+janela1)-1):
-					for y in range(j, (j+janela2)-1):
-						Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
-				Inova[Lnova,Cnova] = Inova[Lnova,Cnova] / janela1*janela2	#aqui faz a media
 
-	
+	# se o parametro passado for um então a técnica é a media
+	if tipo == 1:
+		print("ENTROU NA MEDIA")
+		for linha in range(0, dimensions[0]-1,janela1):	#linha
+			Cnova = 0
+			for coluna in range(0,dimensions[1]-1, janela2):	#coluna
+				for x in range(linha, (linha+janela1)-1):
+					for y in range(coluna, (coluna+janela2)-1):
+						Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
+						#print("SEM DIVIDIR:", Inova[Lnova,Cnova])
+				Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
+				#print("Dividindo", Inova[Lnova,Cnova])
+				Cnova+=1
+				#print("ColunaNova:", Cnova)
+			Lnova+=1
+			#print("LinhaNova:", Lnova)
+		cv2.imshow('image',Inova)
+		cv2.waitKey(0)
+
+	# se o parâmetro for dois então é mediana
 	elif tipo ==2:
-		for j in range(0, dimensions[1]-1,janela2):	#coluna
-			for i in range(0,dimensions[0]-1, janela1):	#linha
-				for x in range(i, (i+janela1)-1):
-					for y in range(j, (j+janela2)-1):
+		for coluna in range(0, dimensions[1]-1,janela2):	#coluna
+			for linha in range(0,dimensions[0]-1, janela1):	#linha
+				for x in range(linha, (linha+janela1)-1):
+					for y in range(coluna, (coluna+janela2)-1):
 						lista = []
 						lista.append(img[x,y])
 						lista_ordenada = sorted(lista) 
 						#fazer o calculo aqui
 		print("fazer mediana")
 	
+	#senão é a moda
 	else:
 		print("fazer a moda")
 
-
-
+#----------------------------------------------------------------------------------------------------------
+#MAIN
 if __name__ == '__main__':
 
 	verificaErroParametros()
@@ -86,26 +98,32 @@ if __name__ == '__main__':
 	#pega percentual e tranforma em int
 	percentual_amostragem = sys.argv[2]
 	percentual_amostragem =  int(percentual_amostragem) /100
+	print("percentual de amostragem:", percentual_amostragem)
 
 	#abre a imagem
 	img = cv2 . imread (sys.argv[1], 0) 	
+	#print("Original", img)
 	dimensions = img.shape
-	print("DIMENSOES:", dimensions)
+	print("DIMENÇÃO ORIGINAL:", dimensions)
 
-	#pega a tecnica de amostragem
+	#pega a tecnica de amostragem e tranforma em int
 	tecnica_amostragem = sys.argv[3] 
 	tecnica_amostragem = int(tecnica_amostragem)
+	print("tecnica de amostragem:", tecnica_amostragem)
 
-	#pega os niveis de cinza
+	#pega os niveis de cinza e tranforma em int
 	niveis_cinza = sys.argv[4]
 	niveis_cinza = int(niveis_cinza)
+	print("niveis de cinza:", niveis_cinza)
 
-
+	# PEGA AS DIMENSÕES DA IMAGEM ORIGINAL E DESCOBRE O TAMANHO DA JANELA
 	janelas = tamanho_janela(percentual_amostragem,dimensions)	#retorna uma lista
+	
+	#SE O TAMANHO DA JANELA FOR REDONDO FAZ A AMOSTARGEM DE ACORDO COM A TÉCNICA PASSADA
 	if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
 		amostragem(img,tecnica_amostragem, dimensions,janelas[0],janelas[1],janelas[2],janelas[3])
 	else:
 		print("interpolacao")
 
 
-	print(janelas)
+	print("jnaela1,janela2, altura e largura: ",janelas)
