@@ -27,7 +27,7 @@ def tamanho_janela(percentual_amostragem,dimensions):
 	janela1 = dimensions[0] / int(nova_altura)
 	janela2 = dimensions[1] / int(nova_largura)
 	print("TAMANHO DA JANELA:",janela1,janela2)
-	return int(janela1), int(janela2), int(nova_altura), int(nova_largura)
+	return float(janela1), float(janela2), int(nova_altura), int(nova_largura)
 
 #----------------------------------------------------------------------------------------------------------------------
 #### FUNÇÃO PARA VERIFICAÇÃO DE ERROS PASSADOS EM PARÂMETRO##
@@ -154,7 +154,7 @@ if __name__ == '__main__':
 	
 	#SE O TAMANHO DA JANELA FOR REDONDO FAZ A AMOSTARGEM DE ACORDO COM A TÉCNICA PASSADA
 	if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
-		amostragem(img,tecnica_amostragem, dimensions,janelas[0],janelas[1],janelas[2],janelas[3])
+		amostragem(img,tecnica_amostragem, dimensions,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3])
 	else:
 		print("interpolacao")
 
