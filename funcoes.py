@@ -254,8 +254,8 @@ if __name__ == '__main__':
 			cv2.waitKey(0)
 	else:
 		time.sleep(3)    
-		imagem_quantizada = imagem_quantizada.astype(np.uint8) 					
-		cv2.imshow('image',imagem_quantizada)
+		imagem_amostrada = imagem_amostrada.astype(np.uint8) 					
+		cv2.imshow('image',imagem_amostrada)
 		cv2.waitKey(0)
 
 
