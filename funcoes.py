@@ -45,7 +45,6 @@ def tamanho_janela(percentual_amostragem,dimensions):
 	janela1 = dimensions[0] / int(nova_altura)
 	janela2 = dimensions[1] / int(nova_largura)
 
-	print("JANELAS:", janela1,janela2,nova_altura,nova_largura)
 	return float(janela1), float(janela2), int(nova_altura), int(nova_largura)
 
 
@@ -56,6 +55,7 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 	Lnova = 0
 	Cnova = 0
 
+	
 	# se o parametro passado for um então a técnica é a media
 	if tipo == 1:
 		for linha in range(0, dimensions[0],janela1):	#linha
@@ -114,8 +114,7 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 				Cnova+=1
 			Lnova+=1
 		Inova = Inova.astype(np.uint8) 
-		tamanho = Inova.sh
-		ape
+		tamanho = Inova.shape
 
 	return Inova
 
@@ -126,7 +125,6 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 	Inova = np.zeros((alturaNova,larguraNova), dtype = int)
 	Lnova = 0
 	Cnova = 0
-
 
 	try:
 		float(janela1)
@@ -142,44 +140,192 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 
 
 	#MÉDIA COM INTERPOLAÇÃO
-	for linha in range(0, dimensions[0],janela1):	#linha
-		Cnova=0
-		if(linha+janela1 < dimensions[0]):
-			for coluna in range(0,dimensions[1], janela2):	#coluna
-				if(coluna+janela2 < dimensions[1]):
-					for x in range(linha, (linha+janela1)):
-						for y in range(coluna, (coluna+janela2)):
-							Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
-					Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
-					Cnova +=1
-				else:
-					#pular para a ultima jane
-					coluna = dimensions[1] - janela2
-					for x in range(linha, (linha+janela1)):
-						for y in range(coluna, (coluna+janela2)):
-							Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media
-					Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media 
-					coluna = dimensions[1]+1
-			Lnova+=1
-		else:
-			linha = dimensions[0] - janela1
-			for coluna in range(0,dimensions[1], janela2):	#coluna
-				if(coluna+janela2 < dimensions[1]):
-					for x in range(linha, (linha+janela1)):
-						for y in range(coluna, (coluna+janela2)):
-							Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
-					Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
-					Cnova +=1
-				else:
-					#pular para a ultima jane
-					coluna = dimensions[1] - janela2
-					for x in range(linha, (linha+janela1)):
-						for y in range(coluna, (coluna+janela2)):
-							Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media
-					Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media 
-					coluna = dimensions[1]+1
-			Lnova+=1
-		linha = dimensions[0]+1
+	if tipo == 1:
+		for linha in range(0, dimensions[0],janela1):	#linha
+			Cnova=0
+			if(linha+janela1 < dimensions[0]):
+				for coluna in range(0,dimensions[1], janela2):	#coluna
+					if(coluna+janela2 < dimensions[1]):
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
+						Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
+						Cnova +=1
+					else:
+						#pular para a ultima jane
+						coluna = dimensions[1] - janela2
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media
+						Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media 
+						coluna = dimensions[1]+1
+				Lnova+=1
+			else:
+				linha = dimensions[0] - janela1
+				for coluna in range(0,dimensions[1], janela2):	#coluna
+					if(coluna+janela2 < dimensions[1]):
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
+						Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
+						Cnova +=1
+					else:
+						#pular para a ultima jane
+						coluna = dimensions[1] - janela2
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media
+						Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media 
+						coluna = dimensions[1]+1
+				Lnova+=1
+			linha = dimensions[0]+1
+	
+	elif tipo ==2:
+		lista = []
+		for linha in range(0, dimensions[0],janela1):	#linha
+			Cnova=0
+			if(linha+janela1 < dimensions[0]):
+				for coluna in range(0,dimensions[1], janela2):	#coluna
+					if(coluna+janela2 < dimensions[1]):
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								lista.append(img[x,y]) #fazendo a soma dos elementos para a media 
+						lista_ordenada = sorted(lista)
+						if len(lista_ordenada) % 2 == 0:
+							mediana = median(lista_ordenada)
+							Inova[Lnova,Cnova] = mediana
+							lista.clear()
+						else:
+							print("Janela não tem mediana")
+						Cnova+=1
+					else:
+						#pular para a ultima jane
+						coluna = dimensions[1] - janela2
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								lista.append(img[x,y]) #fazendo a soma dos elementos para a media 
+						lista_ordenada = sorted(lista)
+						if len(lista_ordenada) % 2 == 0:
+							mediana = median(lista_ordenada)
+							Inova[Lnova,Cnova] = mediana
+							lista.clear()
+						else:
+							print("Janela não tem mediana")
+						Cnova+=1
+						coluna = dimensions[1]+1
+				Lnova+=1
+			else:
+				linha = dimensions[0] - janela1
+				for coluna in range(0,dimensions[1], janela2):	#coluna
+					if(coluna+janela2 < dimensions[1]):
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								lista.append(img[x,y]) #fazendo a soma dos elementos para a media
+						lista_ordenada = sorted(lista)	#aqui faz a media 
+						if len(lista_ordenada) % 2 == 0:
+							mediana = median(lista_ordenada)
+							Inova[Lnova,Cnova] = mediana
+							lista.clear()
+						else:
+							print("Janela não pe redonda")
+						Cnova +=1
+					else:
+						#pular para a ultima jane
+						coluna = dimensions[1] - janela2
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								lista.append(img[x,y]) #fazendo a soma dos elementos para a media
+						lista_ordenada = sorted(lista)	#aqui faz a media 
+						if len(lista_ordenada) % 2 == 0:
+							mediana = median(lista_ordenada)
+							Inova[Lnova,Cnova] = mediana
+							lista.clear()
+						else:
+							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
+							media = statistics.mean(lista)
+							Inova[Lnova,Cnova] = media
+							lista.clear()
+						Cnova+=1
+						coluna = dimensions[1]+1
+				Lnova+=1
+			linha = dimensions[0]+1
+		Inova = Inova.astype(np.uint8) 
+		tamanho = Inova.shape
+	
+	#senão é a moda
+	else:
+		lista = []
+		for linha in range(0, dimensions[0],janela1):	#linha
+			Cnova=0
+			if(linha+janela1 < dimensions[0]):
+				for coluna in range(0,dimensions[1], janela2):	#coluna
+					if(coluna+janela2 < dimensions[1]):
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								lista.append(img[x,y]) 
+						try:
+							moda = statistics.mode(lista)
+							Inova[Lnova,Cnova] = moda
+							lista.clear()
+						except :
+							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
+							media = statistics.mean(lista)
+							Inova[Lnova,Cnova] = media
+							lista.clear()
+						Cnova+=1
+					else:
+						coluna = dimensions[1]-janela2
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								lista.append(img[x,y]) 
+						try:
+							moda = statistics.mode(lista)
+							Inova[Lnova,Cnova] = moda
+							lista.clear()
+						except :
+							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
+							media = statistics.mean(lista)
+							Inova[Lnova,Cnova] = media
+							lista.clear()
+							Cnova+=1
+						coluna = dimensions[1]+1
+				Lnova+=1
+			else:
+				linha = dimensions[0] - janela1
+				for coluna in range(0,dimensions[1], janela2):	#coluna
+					if(coluna+janela2 < dimensions[1]):
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								lista.append(img[x,y]) 
+						try:
+							moda = statistics.mode(lista)
+							Inova[Lnova,Cnova] = moda
+							lista.clear()
+						except :
+							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
+							media = statistics.mean(lista)
+							Inova[Lnova,Cnova] = media
+							lista.clear()
+						Cnova+=1
+					else:
+						#pular para a ultima jane
+						coluna = dimensions[1] - janela2
+						for x in range(linha, (linha+janela1)):
+							for y in range(coluna, (coluna+janela2)):
+								lista.append(img[x,y]) 
+						try:
+							moda = statistics.mode(lista)
+							Inova[Lnova,Cnova] = moda
+							lista.clear()
+						except :
+							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
+							media = statistics.mean(lista)
+							Inova[Lnova,Cnova] = media
+							lista.clear()
+						Cnova+=1
+						coluna = dimensions[1]+1
+				Lnova+=1
+			linha = dimensions[0]+1
 
 	return Inova
 
@@ -213,6 +359,7 @@ def quantizacao(img, altura,largura,niveis_cinza):
 	intervalo_quantizacao = (256 / (nCores))
 	intervalo_quantizacao = int(intervalo_quantizacao)
 	quantizada = np.zeros([largura, altura], dtype='uint8')
+	
 	#define os intervalos que utilizará
 	lista_intervalos = []
 	for i in range(0, 256, intervalo_quantizacao):
@@ -252,43 +399,28 @@ if __name__ == '__main__':
 
 	#abre a imagem
 	img = cv2 . imread (sys.argv[1], 0) 	
-	#print("Original", img)
 	dimensions = img.shape
-	#print("DIMENÇÃO ORIGINAL:", dimensions)
 
 	#pega a tecnica de amostragem e tranforma em int
 	tecnica_amostragem = sys.argv[3] 
 	tecnica_amostragem = int(tecnica_amostragem)
-	#print("tecnica de amostragem:", tecnica_amostragem)
 
 	#pega os niveis de cinza e tranforma em int
 	niveis_cinza = sys.argv[4]
 	niveis_cinza = int(niveis_cinza)
-	#print("niveis de cinza:", niveis_cinza)
 
 	janelas = tamanho_janela(percentual_amostragem,dimensions)	#retorna uma lista
 
-	
 	if(percentual_amostragem != 0):
-
-		# PEGA AS DIMENSÕES DA IMAGEM ORIGINAL E DESCOBRE O TAMANHO DA JANELA
-		
+	
 		
 		#SE O TAMANHO DA JANELA FOR REDONDO FAZ A AMOSTARGEM DE ACORDO COM A TÉCNICA PASSADA
 		if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
 			imagem_amostrada = amostragem(img,tecnica_amostragem, dimensions,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3])
-			
-			#imagem_amostrada = imagem_amostrada.astype(np.uint8) 					
-			#cv2.imshow('image',imagem_amostrada)
-			#cv2.waitKey(0)
-		
+				
 		else:
-			
 			imagem_amostrada = interpolacao(img,tecnica_amostragem, dimensions,janelas[0],janelas[1],janelas[2],janelas[3] )
 			
-			#imagem_amostrada = imagem_amostrada.astype(np.uint8)
-			#cv2.imshow('image',imagem_amostrada)
-			#cv2.waitKey(0)
 	else:
 		print("O programa não fará amostragem dado que foi passado como parâmetro de amostreagem 0%")
 		imagem_amostrada = img
@@ -309,8 +441,3 @@ if __name__ == '__main__':
 		imagem_amostrada = imagem_amostrada.astype(np.uint8) 					
 		cv2.imshow('image',imagem_amostrada)
 		cv2.waitKey(0)
-
-
-	
-
-	#print("jnaela1,janela2, altura e largura: ",janelas)
