@@ -432,15 +432,18 @@ if __name__ == '__main__':
 		if niveis_cinza == 2:
 			imagem_quantizada = quantizacao_binaria(imagem_amostrada,janelas[2],janelas[3])
 			imagem_quantizada = imagem_quantizada.astype(np.uint8)
+			retval	=	cv2.imwrite(	'ImagemEDITADA.png', imagem_quantizada	)
 			cv2.imshow('image',imagem_quantizada)
 			cv2.waitKey(0)
 		else:
 			imagem_quantizada = quantizacao(imagem_amostrada,janelas[2],janelas[3],niveis_cinza)
 			imagem_quantizada = imagem_quantizada.astype(np.uint8)
+			retval	=	cv2.imwrite(	'ImagemEDITADA.png', imagem_quantizada	)
 			cv2.imshow('image',imagem_quantizada)
 			cv2.waitKey(0)
 	else:
 		time.sleep(3)    
 		imagem_amostrada = imagem_amostrada.astype(np.uint8) 					
+		retval	=	cv2.imwrite(	'ImagemEDITADA.png', imagem_amostrada	)
 		cv2.imshow('image',imagem_amostrada)
 		cv2.waitKey(0)
