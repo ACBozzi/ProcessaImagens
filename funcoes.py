@@ -1,8 +1,19 @@
-#Implemente um programa que realize amostragem de quantização em uma imagem monocromática. O 
-#programa deve receber como parâmetros o nome da imagem, o porcentual de amostragem, a técnica de 
-#amostragem (média, mediana ou moda.) e a quantidade de níveis de cinza [2,4,8,16,32,64,128,256] 
-#(quantização). A saída do programa deve ser a imagem amostrada. Utilize a imagem exemplo.png para 
-#testar o programa.
+#Trabalho de Amostragem e quantização referente a disciplina de Processamento de IMAGENS#
+#																						#
+#Aluna: Anna Caroline Bozzi																#
+#GRR: 20173532																			#	
+#########################################################################################
+
+#####################################################################################################
+#ENUNCIADO:																							#
+#Implemente um programa que realize amostragem de quantização em uma imagem monocromática. O 		#
+#programa deve receber como parâmetros o nome da imagem, o porcentual de amostragem, a técnica de 	#
+#amostragem (média, mediana ou moda.) e a quantidade de níveis de cinza [2,4,8,16,32,64,128,256] 	#
+#(quantização). A saída do programa deve ser a imagem amostrada. Utilize a imagem exemplo.png para 	#
+#testar o programa.																					#
+#####################################################################################################
+
+
 
 import numpy as np
 import cv2
@@ -16,8 +27,10 @@ import statistics
 from PIL import Image
 from pylab import *
 import matplotlib.cm as cm
-#----------------------------------------------------------------------------------------------------------------------
-#### FUNÇÃO PARA VERIFICAÇÃO DE ERROS PASSADOS EM PARÂMETRO##
+
+
+#-------------------FUNÇÃO PARA VERIFICAÇÃO DE ERROS PASSADOS EM PARÂMETRO------------------------------------------------------------
+
 def verificaErroParametros():
     argumentos = len(sys.argv)
     if(argumentos == 1):
@@ -37,8 +50,8 @@ def verificaErroParametros():
         exit()
 
 
-#-------------------------------------------------------------------------------------------------------------------
-#FUNÇÃO PARA DEFINIR O TAMANHO DA JANELA
+#------------------FUNÇÃO PARA DEFINIR O TAMANHO DA JANELA PARA AMOSTRAGEM------------------------------------
+
 def tamanho_janela(percentual_amostragem,dimensions):	
 	nova_altura = dimensions[0] - (dimensions[0]*percentual_amostragem)
 	nova_largura = dimensions[1] - (dimensions[1]*percentual_amostragem)
@@ -48,15 +61,15 @@ def tamanho_janela(percentual_amostragem,dimensions):
 	return float(janela1), float(janela2), int(nova_altura), int(nova_largura)
 
 
-#-------------------------------------------------------------------------------------------------------------------------
-# CASO O TAMANHO DA IMAGEM SEJA PAR, NÃO PRECISA INTERPOLAR E ENTRA AQUI PARA FAZER MODA, MEDIANA OU MEDIA 
+#------------PARA CÁUCULOS QUAMNDO A JANELA É MULTIPLA DO TAMANHO-----------------------------------
+
 def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 	Inova = np.zeros((alturaNova,larguraNova), dtype = int)
 	Lnova = 0
 	Cnova = 0
 
 	
-	# se o parametro passado for um então a técnica é a media
+	# se o parametro passado for um então a técnica é a MÉDIA
 	if tipo == 1:
 		for linha in range(0, dimensions[0],janela1):	#linha
 			Cnova = 0
@@ -67,12 +80,8 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 				Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
 				Cnova+=1
 			Lnova+=1
-		Inova = Inova.astype(np.uint8) 
-		cv2.imshow('image',Inova)
-		cv2.waitKey(0)
-		tamanho = Inova.shape
 
-	# se o parâmetro for dois então é mediana
+	# se o parâmetro for dois então é MEDIANA
 	elif tipo ==2:
 		lista = []
 		for linha in range(0, dimensions[0],janela1):	#linha
@@ -93,7 +102,7 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 		Inova = Inova.astype(np.uint8) 
 		tamanho = Inova.shape
 	
-	#senão é a moda
+	#senão é a MODA
 	else:
 		lista = []
 		for linha in range(0, dimensions[0],janela1):	#linha
@@ -107,7 +116,7 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 					Inova[Lnova,Cnova] = moda
 					lista.clear()
 				except :
-					print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
+					#print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
 					media = statistics.mean(lista)
 					Inova[Lnova,Cnova] = media
 					lista.clear()
@@ -118,9 +127,8 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 
 	return Inova
 
-#----------------------------------------------------------------------------------------------------------
+#-----------------CASO O VALOR DA JANELA NÃO SEJA EXATO FAZER INTERPOLAÇÃO--------------------------
 
-#CASO O VALOR DA JANELA NÃO SEJA EXATO FAZER INTERPOLAÇÃO
 def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 	Inova = np.zeros((alturaNova,larguraNova), dtype = int)
 	Lnova = 0
@@ -139,7 +147,7 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 	
 
 
-	#MÉDIA COM INTERPOLAÇÃO
+	#MÉDIA 
 	if tipo == 1:
 		for linha in range(0, dimensions[0],janela1):	#linha
 			Cnova=0
@@ -180,6 +188,7 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 				Lnova+=1
 			linha = dimensions[0]+1
 	
+	#MODA 
 	elif tipo ==2:
 		lista = []
 		for linha in range(0, dimensions[0],janela1):	#linha
@@ -252,7 +261,7 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 		Inova = Inova.astype(np.uint8) 
 		tamanho = Inova.shape
 	
-	#senão é a moda
+	#MODA
 	else:
 		lista = []
 		for linha in range(0, dimensions[0],janela1):	#linha
@@ -329,12 +338,8 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 
 	return Inova
 
-	
-#----------------------------------------------------------------------------------------------------------
 
-#def interpolacao_add_zeros(img,nova_altura,nova_largura):
-
-#----------------------------------------------------------------------------------------------------------
+#----------------QUANTIZAÇÃO PARA UMA IMAGEM COM APENAS DOIS NIVEIS DE CINZA-----------------------------
 
 def quantizacao_binaria(img,altura,largura):
 
@@ -348,7 +353,7 @@ def quantizacao_binaria(img,altura,largura):
 	
 	return img
 
-#----------------------------------------------------------------------------------------------------------
+#---------------------QUANTIZAÇÃO PARA IMAGENS COM MAIS DE DOIS NÍVEIS DE CINZA---------------------------
 
 def quantizacao(img, altura,largura,niveis_cinza):
 
@@ -386,9 +391,8 @@ def quantizacao(img, altura,largura,niveis_cinza):
 			
 	return Inova
 
-#----------------------------------------------------------------------------------------------------------
+#---------MAIN-----------------------------------------------------------------------
 
-#MAIN
 if __name__ == '__main__':
 
 	verificaErroParametros()
@@ -413,7 +417,6 @@ if __name__ == '__main__':
 
 	if(percentual_amostragem != 0):
 	
-		
 		#SE O TAMANHO DA JANELA FOR REDONDO FAZ A AMOSTARGEM DE ACORDO COM A TÉCNICA PASSADA
 		if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
 			imagem_amostrada = amostragem(img,tecnica_amostragem, dimensions,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3])
