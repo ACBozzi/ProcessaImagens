@@ -127,14 +127,12 @@ def interpolacao(img,janela1,janela2,alturaNova,larguraNova):
     
 	for i in range(0, alturaNova, janela1):
 		for j in range(0, larguraNova, janela2):
+			Inova[k,l] = img[i,j]
 			l+=1
 		l = 0
-	Inova = Inova.astype(np.uint8) 
-	tamanho = Inova.shape
-	print("NOVO TAMANHO:", tamanho)					
-	cv2.imshow('image',Inova)
-	cv2.waitKey(0)
-
+		k+=1
+	
+	return Inova
 #----------------------------------------------------------------------------------------------------------
 
 #def interpolacao_add_zeros(img,nova_altura,nova_largura):
@@ -150,13 +148,12 @@ def quantizacao_binaria(img,altura,largura):
 			else:
 				img[linha,coluna] = 255
 		coluna = 0
-	img = img.astype(np.uint8) 					
-	cv2.imshow('image',img)
-	cv2.waitKey(0)
+	
+	return img
+
+#----------------------------------------------------------------------------------------------------------
 
 def quantizacao(img, altura,largura,niveis_cinza):
-	print("ENTROU NA QUANTIZAÇÃO")
-
 
 	Inova = np.zeros((altura,largura), dtype = int)
 
@@ -182,21 +179,14 @@ def quantizacao(img, altura,largura,niveis_cinza):
 		coluna = 0
 		for coluna in range(0,largura):
 			while tam != tamanho:
-				print("entrou no while")
 				if(img[linha,coluna] < lista_intervalos[tam]):
 					Inova[linha,coluna] = media_intervalos[tam-1]
-					print(Inova[linha,coluna])
 					tam=tamanho
 				else:
-					print("else")
 					tam +=1
 			tam = 1
 			
-	print("..")	
-	print(Inova)
-	Inova = Inova.astype(np.uint8) 					
-	cv2.imshow('image',Inova)
-	cv2.waitKey(0)
+	return Inova
 
 #----------------------------------------------------------------------------------------------------------
 
@@ -225,30 +215,47 @@ if __name__ == '__main__':
 	niveis_cinza = int(niveis_cinza)
 	#print("niveis de cinza:", niveis_cinza)
 
+	janelas = tamanho_janela(percentual_amostragem,dimensions)	#retorna uma lista
+
 	
 	if(percentual_amostragem != 0):
 
 		# PEGA AS DIMENSÕES DA IMAGEM ORIGINAL E DESCOBRE O TAMANHO DA JANELA
-		janelas = tamanho_janela(percentual_amostragem,dimensions)	#retorna uma lista
+		
 		
 		#SE O TAMANHO DA JANELA FOR REDONDO FAZ A AMOSTARGEM DE ACORDO COM A TÉCNICA PASSADA
 		if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
 			imagem_amostrada = amostragem(img,tecnica_amostragem, dimensions,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3])
-			cv2.imshow('image',imagem_amostrada)
-			cv2.waitKey(0)
+			
+			#imagem_amostrada = imagem_amostrada.astype(np.uint8) 					
+			#cv2.imshow('image',imagem_amostrada)
+			#cv2.waitKey(0)
+		
 		else:
-			interpolacao(img,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3] )
+			imagem_amostrada = interpolacao(img,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3] )
+			
+			#imagem_amostrada = imagem_amostrada.astype(np.uint8)
+			#cv2.imshow('image',imagem_amostrada)
+			#cv2.waitKey(0)
 	else:
 		print("O programa não fará amostragem dado que foi passado como parâmetro de amostreagem 0%")
+		imagem_amostrada = img
 
-	if niveis_cinza != 256:
+	if niveis_cinza != 256 and niveis_cinza!= 0:
 		if niveis_cinza == 2:
-			quantizacao_binaria(img,dimensions[0],dimensions[1])
+			imagem_quantizada = quantizacao_binaria(imagem_amostrada,janelas[2],janelas[3])
+			imagem_quantizada = imagem_quantizada.astype(np.uint8)
+			cv2.imshow('image',imagem_quantizada)
+			cv2.waitKey(0)
 		else:
-			quantizacao(img,dimensions[0],dimensions[1],niveis_cinza)
+			imagem_quantizada = quantizacao(imagem_amostrada,janelas[2],janelas[3],niveis_cinza)
+			imagem_quantizada = imagem_quantizada.astype(np.uint8)
+			cv2.imshow('image',imagem_quantizada)
+			cv2.waitKey(0)
 	else:
 		time.sleep(3)    
-		cv2.imshow('image',img)
+		imagem_quantizada = imagem_quantizada.astype(np.uint8) 					
+		cv2.imshow('image',imagem_quantizada)
 		cv2.waitKey(0)
 
 
