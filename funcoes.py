@@ -66,6 +66,8 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 				Cnova+=1
 			Lnova+=1
 		Inova = Inova.astype(np.uint8) 
+		cv2.imshow('image',Inova)
+		cv2.waitKey(0)
 		tamanho = Inova.shape
 
 	# se o parâmetro for dois então é mediana
@@ -129,8 +131,10 @@ def interpolacao(img,janela1,janela2,alturaNova,larguraNova):
 		l = 0
 	Inova = Inova.astype(np.uint8) 
 	tamanho = Inova.shape
-	
-	return Inova
+	print("NOVO TAMANHO:", tamanho)					
+	cv2.imshow('image',Inova)
+	cv2.waitKey(0)
+
 #----------------------------------------------------------------------------------------------------------
 
 #def interpolacao_add_zeros(img,nova_altura,nova_largura):
@@ -146,12 +150,13 @@ def quantizacao_binaria(img,altura,largura):
 			else:
 				img[linha,coluna] = 255
 		coluna = 0
+	img = img.astype(np.uint8) 					
+	cv2.imshow('image',img)
+	cv2.waitKey(0)
 
-	return img
-
-
-#----------------------------------------------------------------------------------------------------------
 def quantizacao(img, altura,largura,niveis_cinza):
+	print("ENTROU NA QUANTIZAÇÃO")
+
 
 	Inova = np.zeros((altura,largura), dtype = int)
 
@@ -187,7 +192,12 @@ def quantizacao(img, altura,largura,niveis_cinza):
 					tam +=1
 			tam = 1
 			
-	return Inova
+	print("..")	
+	print(Inova)
+	Inova = Inova.astype(np.uint8) 					
+	cv2.imshow('image',Inova)
+	cv2.waitKey(0)
+
 #----------------------------------------------------------------------------------------------------------
 
 #MAIN
@@ -227,24 +237,15 @@ if __name__ == '__main__':
 			cv2.imshow('image',imagem_amostrada)
 			cv2.waitKey(0)
 		else:
-			imagem_amostrada = interpolacao(img,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3] )
-			cv2.imshow('image',imagem_amostrada)
-			cv2.waitKey(0)
-
+			interpolacao(img,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3] )
 	else:
 		print("O programa não fará amostragem dado que foi passado como parâmetro de amostreagem 0%")
 
 	if niveis_cinza != 256:
 		if niveis_cinza == 2:
-			imagem_quantizada = quantizacao_binaria(imagem_amostrada,janelas[2],janelas[3])
-			cv2.imshow('image',imagem_quantizada)
-			cv2.waitKey(0)
-
+			quantizacao_binaria(img,dimensions[0],dimensions[1])
 		else:
-			imagem_quantizada = quantizacao(imagem_amostrada,janelas[2],janelas[3],niveis_cinza)
-			cv2.imshow('image',imagem_quantizada)
-			cv2.waitKey(0)
-
+			quantizacao(img,dimensions[0],dimensions[1],niveis_cinza)
 	else:
 		time.sleep(3)    
 		cv2.imshow('image',img)
