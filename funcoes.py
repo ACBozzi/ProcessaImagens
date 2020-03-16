@@ -44,6 +44,8 @@ def tamanho_janela(percentual_amostragem,dimensions):
 	nova_largura = dimensions[1] - (dimensions[1]*percentual_amostragem)
 	janela1 = dimensions[0] / int(nova_altura)
 	janela2 = dimensions[1] / int(nova_largura)
+
+	print("JANELAS:", janela1,janela2,nova_altura,nova_largura)
 	return float(janela1), float(janela2), int(nova_altura), int(nova_largura)
 
 
@@ -112,27 +114,76 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 				Cnova+=1
 			Lnova+=1
 		Inova = Inova.astype(np.uint8) 
-		tamanho = Inova.shape
+		tamanho = Inova.sh
+		ape
 
 	return Inova
 
 #----------------------------------------------------------------------------------------------------------
 
 #CASO O VALOR DA JANELA NÃO SEJA EXATO FAZER INTERPOLAÇÃO
-def interpolacao(img,janela1,janela2,alturaNova,larguraNova):
+def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 	Inova = np.zeros((alturaNova,larguraNova), dtype = int)
+	Lnova = 0
+	Cnova = 0
+
+
+	try:
+		float(janela1)
+		janela1 =  round(janela1+0.5)
+	except:
+		janela1 = int(janela1)
+	try:
+		float(janela2)
+		janela2 = round(janela2+0.5)
+	except:
+		janela2 = int(janela2)
 	
-	k = 0
-	l = 0
-    
-	for i in range(0, alturaNova, janela1):
-		for j in range(0, larguraNova, janela2):
-			Inova[k,l] = img[i,j]
-			l+=1
-		l = 0
-		k+=1
-	
+
+
+	#MÉDIA COM INTERPOLAÇÃO
+	for linha in range(0, dimensions[0],janela1):	#linha
+		Cnova=0
+		if(linha+janela1 < dimensions[0]):
+			for coluna in range(0,dimensions[1], janela2):	#coluna
+				if(coluna+janela2 < dimensions[1]):
+					for x in range(linha, (linha+janela1)):
+						for y in range(coluna, (coluna+janela2)):
+							Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
+					Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
+					Cnova +=1
+				else:
+					#pular para a ultima jane
+					coluna = dimensions[1] - janela2
+					for x in range(linha, (linha+janela1)):
+						for y in range(coluna, (coluna+janela2)):
+							Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media
+					Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media 
+					coluna = dimensions[1]+1
+			Lnova+=1
+		else:
+			linha = dimensions[0] - janela1
+			for coluna in range(0,dimensions[1], janela2):	#coluna
+				if(coluna+janela2 < dimensions[1]):
+					for x in range(linha, (linha+janela1)):
+						for y in range(coluna, (coluna+janela2)):
+							Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media 
+					Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media
+					Cnova +=1
+				else:
+					#pular para a ultima jane
+					coluna = dimensions[1] - janela2
+					for x in range(linha, (linha+janela1)):
+						for y in range(coluna, (coluna+janela2)):
+							Inova[Lnova,Cnova] += img[x,y] #fazendo a soma dos elementos para a media
+					Inova[Lnova,Cnova] = (Inova[Lnova,Cnova] / (janela1*janela2))	#aqui faz a media 
+					coluna = dimensions[1]+1
+			Lnova+=1
+		linha = dimensions[0]+1
+
 	return Inova
+
+	
 #----------------------------------------------------------------------------------------------------------
 
 #def interpolacao_add_zeros(img,nova_altura,nova_largura):
@@ -232,7 +283,8 @@ if __name__ == '__main__':
 			#cv2.waitKey(0)
 		
 		else:
-			imagem_amostrada = interpolacao(img,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3] )
+			
+			imagem_amostrada = interpolacao(img,tecnica_amostragem, dimensions,janelas[0],janelas[1],janelas[2],janelas[3] )
 			
 			#imagem_amostrada = imagem_amostrada.astype(np.uint8)
 			#cv2.imshow('image',imagem_amostrada)
