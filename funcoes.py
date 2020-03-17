@@ -96,7 +96,7 @@ def amostragem(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 					Inova[Lnova,Cnova] = mediana
 					lista.clear()
 				else:
-					print("Janela não pe redonda")
+					print("")
 				Cnova+=1
 			Lnova+=1
 		Inova = Inova.astype(np.uint8) 
@@ -205,7 +205,7 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 							Inova[Lnova,Cnova] = mediana
 							lista.clear()
 						else:
-							print("Janela não tem mediana")
+							print("")
 						Cnova+=1
 					else:
 						#pular para a ultima jane
@@ -219,7 +219,7 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 							Inova[Lnova,Cnova] = mediana
 							lista.clear()
 						else:
-							print("Janela não tem mediana")
+							print("")
 						Cnova+=1
 						coluna = dimensions[1]+1
 				Lnova+=1
@@ -236,7 +236,7 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 							Inova[Lnova,Cnova] = mediana
 							lista.clear()
 						else:
-							print("Janela não pe redonda")
+							print("")
 						Cnova +=1
 					else:
 						#pular para a ultima jane
@@ -250,7 +250,6 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 							Inova[Lnova,Cnova] = mediana
 							lista.clear()
 						else:
-							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
 							media = statistics.mean(lista)
 							Inova[Lnova,Cnova] = media
 							lista.clear()
@@ -277,7 +276,6 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 							Inova[Lnova,Cnova] = moda
 							lista.clear()
 						except :
-							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
 							media = statistics.mean(lista)
 							Inova[Lnova,Cnova] = media
 							lista.clear()
@@ -292,7 +290,6 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 							Inova[Lnova,Cnova] = moda
 							lista.clear()
 						except :
-							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
 							media = statistics.mean(lista)
 							Inova[Lnova,Cnova] = media
 							lista.clear()
@@ -311,7 +308,6 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 							Inova[Lnova,Cnova] = moda
 							lista.clear()
 						except :
-							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
 							media = statistics.mean(lista)
 							Inova[Lnova,Cnova] = media
 							lista.clear()
@@ -327,7 +323,6 @@ def interpolacao(img,tipo, dimensions,janela1,janela2,alturaNova,larguraNova):
 							Inova[Lnova,Cnova] = moda
 							lista.clear()
 						except :
-							print("Essa janela não pode usar a moda para calculo, foi utilizado a media")
 							media = statistics.mean(lista)
 							Inova[Lnova,Cnova] = media
 							lista.clear()
@@ -391,19 +386,38 @@ def quantizacao(img, altura,largura,niveis_cinza):
 			
 	return Inova
 
+
+
+#---------AMPLIAÇÂO-----------------------------------------------------------------------
+
+def ampliacao(img, fator, dimensions):
+
+	altura = (dimensions[0]*fator)
+	largura = (dimensions[1]*fator)
+
+	Inova = np.zeros((int(altura),int(largura)), dtype = int)
+
+	for linha in range(0, int(altura)):	#linha
+		for coluna in range(0,int(largura)):	#coluna
+			Inova[linha,coluna] = img[int(linha//fator)][int(coluna//fator)]
+
+	return Inova
+	
+
 #---------MAIN-----------------------------------------------------------------------
 
 if __name__ == '__main__':
 
 	verificaErroParametros()
-
-	#pega percentual e tranforma em int
-	percentual_amostragem = sys.argv[2]
-	percentual_amostragem =  int(percentual_amostragem) /100
-
+	amplia = 0
 	#abre a imagem
 	img = cv2 . imread (sys.argv[1], 0) 	
 	dimensions = img.shape
+
+
+	#pega percentual e tranforma em int
+	amostragem = sys.argv[2]
+	percentual_amostragem =  int(amostragem) /100
 
 	#pega a tecnica de amostragem e tranforma em int
 	tecnica_amostragem = sys.argv[3] 
@@ -415,34 +429,46 @@ if __name__ == '__main__':
 
 	janelas = tamanho_janela(percentual_amostragem,dimensions)	#retorna uma lista
 
-	if(percentual_amostragem != 0):
-	
-		#SE O TAMANHO DA JANELA FOR REDONDO FAZ A AMOSTARGEM DE ACORDO COM A TÉCNICA PASSADA
-		if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
-			imagem_amostrada = amostragem(img,tecnica_amostragem, dimensions,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3])
-				
-		else:
-			imagem_amostrada = interpolacao(img,tecnica_amostragem, dimensions,janelas[0],janelas[1],janelas[2],janelas[3] )
-			
+	if(int(amostragem) > 100):
+		amplia = 1
+		fator =  int(amostragem) /100
+		imagem_amostrada = ampliacao(img,fator,dimensions)
+		tamanho = imagem_amostrada.shape
+		imagem_amostrada = imagem_amostrada.astype(np.uint8) 					
 	else:
-		print("O programa não fará amostragem dado que foi passado como parâmetro de amostreagem 0%")
-		imagem_amostrada = img
+		if(percentual_amostragem != 0):
+	
+			#SE O TAMANHO DA JANELA FOR REDONDO FAZ A AMOSTARGEM DE ACORDO COM A TÉCNICA PASSADA
+			if dimensions[0] % janelas[0] == 0 and  dimensions [1] % janelas[1]== 0:
+				imagem_amostrada = amostragem(img,tecnica_amostragem, dimensions,int(janelas[0]),int(janelas[1]),janelas[2],janelas[3])
+				
+			else:
+				imagem_amostrada = interpolacao(img,tecnica_amostragem, dimensions,janelas[0],janelas[1],janelas[2],janelas[3] )
+			
+		else:
+			print("O programa não fará amostragem dado que foi passado como parâmetro de amostreagem 0%")
+			imagem_amostrada = img
 
 	if niveis_cinza != 256 and niveis_cinza!= 0:
 		if niveis_cinza == 2:
-			imagem_quantizada = quantizacao_binaria(imagem_amostrada,janelas[2],janelas[3])
+			if(amplia == 1):
+				imagem_quantizada = quantizacao_binaria(imagem_amostrada,tamanho[0], tamanho[1])
+			else:
+				imagem_quantizada = quantizacao_binaria(imagem_amostrada,janelas[2],janelas[3])
 			imagem_quantizada = imagem_quantizada.astype(np.uint8)
 			retval	=	cv2.imwrite(	'ImagemEDITADA.png', imagem_quantizada	)
 			cv2.imshow('image',imagem_quantizada)
 			cv2.waitKey(0)
 		else:
-			imagem_quantizada = quantizacao(imagem_amostrada,janelas[2],janelas[3],niveis_cinza)
+			if(amplia == 1):
+				imagem_quantizada = quantizacao(imagem_amostrada,tamanho[0], tamanho[1],niveis_cinza)
+			else:
+				imagem_quantizada = quantizacao(imagem_amostrada,janelas[2],janelas[3],niveis_cinza)
 			imagem_quantizada = imagem_quantizada.astype(np.uint8)
 			retval	=	cv2.imwrite(	'ImagemEDITADA.png', imagem_quantizada	)
 			cv2.imshow('image',imagem_quantizada)
 			cv2.waitKey(0)
 	else:
-		time.sleep(3)    
 		imagem_amostrada = imagem_amostrada.astype(np.uint8) 					
 		retval	=	cv2.imwrite(	'ImagemEDITADA.png', imagem_amostrada	)
 		cv2.imshow('image',imagem_amostrada)
