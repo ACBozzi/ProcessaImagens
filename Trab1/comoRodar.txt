@@ -1,2 +1,0 @@
-rodar com 
- python3 funcoes.py teste.jpeg 50 1 1
