@@ -32,16 +32,7 @@ def cria_histograma(img, dimensions):
 	plt.show()
 #---------------------------------------------------------------------
 
-
-
-
-
 if __name__ == '__main__':
 	img = cv2.imread('hulk1.png', 0)
 	dimensions = img.shape
 	cria_histograma(img,dimensions)
-	
-
-
-
-
